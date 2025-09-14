@@ -5,7 +5,6 @@
   <!-- viewport correcto en iOS, y evitar zooms raros -->
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Countdown</title>
-
   <link rel="icon" type="image/svg+xml" href="hourglass.svg">
   <link rel="stylesheet" href="styles.css" />
 </head>
@@ -14,74 +13,64 @@
     <div id="countdown" class="countdown" aria-live="polite">00d 00h 00m 00s</div>
     <p class="phrase">"hay que hacer contacto cero para llegar a tener distancia cero"</p>
   </div>
-
   <script>
-    // ---- helper: hora local en un timeZone IANA -> ms UTC
-    function zonedTimeToUtcMs({ y, M, d, h = 0, m = 0, s = 0 }, timeZone) {
-      // Creamos una fecha “marcador” en UTC con esos campos
-      const marker = new Date(Date.UTC(y, M - 1, d, h, m, s));
-      // La representamos como “hora local en ese timeZone”
-      const asLocal = new Date(marker.toLocaleString('en-US', { timeZone }));
-      // El desfase es marker - asLocal
-      const offset = marker - asLocal;
-      return marker.getTime() - offset;
-    }
-
     // ---- Cuenta atrás (10 nov 2025, 08:55 en Canarias) ----
-    const targetDate = zonedTimeToUtcMs(
-      { y: 2025, M: 11, d: 10, h: 8, m: 55, s: 0 },
-      "Atlantic/Canary"
-    );
-
+    // Canarias en noviembre = UTC+0 (horario de invierno)
+    // Así que 08:55 en Canarias = 08:55 UTC
+    const targetDate = new Date(Date.UTC(2025, 10, 10, 8, 55, 0));
+    
     const el = document.getElementById("countdown");
     const pad2 = (n) => String(n).padStart(2, "0");
-
+    
     function renderCountdown() {
-      const now = Date.now();
-      let ms = targetDate - now;
-
+      const now = new Date();
+      let ms = targetDate.getTime() - now.getTime();
+      
       if (ms <= 0) {
-        el.textContent = "00d 00h 00m 00s";
+        el.textContent = "¡ES HORA!";
         return;
       }
-
+      
       const d = Math.floor(ms / 86400000); ms -= d * 86400000;
       const h = Math.floor(ms / 3600000);  ms -= h * 3600000;
       const m = Math.floor(ms / 60000);    ms -= m * 60000;
       const s = Math.floor(ms / 1000);
-
+      
       el.textContent = `${pad2(d)}d ${pad2(h)}h ${pad2(m)}m ${pad2(s)}s`;
     }
-
+    
     // ---- FitText: hace que el contador quepa SIEMPRE en el ancho ----
     function fitCountdown() {
       const horizontalPadding = 16 * 2; // 1rem a cada lado
       const available = Math.max(0, window.innerWidth - horizontalPadding);
-
       el.style.fontSize = "120px";
       const textWidth = el.scrollWidth || el.getBoundingClientRect().width || 1;
-
       const scale = (available / textWidth) * 0.92;
-
       const px = Math.max(40, Math.min(180, 120 * scale));
       el.style.fontSize = px + "px";
     }
-
+    
     function tick() {
       renderCountdown();
     }
-
+    
     // Primer render + ajuste; luego intervalo
     renderCountdown();
     fitCountdown();
     const interval = setInterval(tick, 1000);
-
+    
     // Reajustar al cambiar tamaño/orientación y tras pintar la primera vez
     window.addEventListener("resize", fitCountdown, { passive: true });
     window.addEventListener("orientationchange", () => setTimeout(fitCountdown, 50), { passive: true });
-
+    
     // Ajuste cada minuto por si cambia algo del UI del navegador móvil
     setInterval(fitCountdown, 60 * 1000);
+    
+    // Debug: mostrar la fecha target y actual en consola
+    console.log('Fecha objetivo:', targetDate);
+    console.log('Fecha actual:', new Date());
+    console.log('Diferencia en ms:', targetDate.getTime() - new Date().getTime());
+    console.log('Diferencia en minutos:', Math.floor((targetDate.getTime() - new Date().getTime()) / 60000));
   </script>
 </body>
 </html>
