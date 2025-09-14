@@ -1,5 +1,4 @@
-/* =========  Fuentes auto-hospedadas (pon los .woff2 en /fonts)  ========= */
-/* Roboto Mono 700 para el contador */
+/* ====== Fuentes auto-hospedadas (pon .woff2 en /fonts) ====== */
 @font-face {
   font-family: "Roboto Mono Local";
   src: local("Roboto Mono Bold"),
@@ -8,8 +7,6 @@
   font-style: normal;
   font-display: swap;
 }
-
-/* Lexend 400 para la frase */
 @font-face {
   font-family: "Lexend Local";
   src: local("Lexend Regular"),
@@ -19,53 +16,54 @@
   font-display: swap;
 }
 
+/* Reset mínimo */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 html, body { height: 100%; }
 
-/* iOS: evita reescalado automático de texto */
+/* iOS: respeta tamaños y usa el viewport real */
 html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 
 body {
-  min-height: 100svh;               /* usa viewport real en móviles */
+  min-height: 100svh;                       /* altura real del viewport en móviles */
   display: flex;
   justify-content: center;
   align-items: center;
   background: #0d0d0d;
   color: #f5f5f5;
+  overflow-x: hidden;                       /* evita “paneo” lateral en iOS */
   font-family: "Roboto Mono Local", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-  padding: env(safe-area-inset-top) env(safe-area-inset-right)
-           env(safe-area-inset-bottom) env(safe-area-inset-left);
+
+  /* safe areas en iPhone (notch) */
+  padding: env(safe-area-inset-top) calc(env(safe-area-inset-right) + 0px)
+           env(safe-area-inset-bottom) calc(env(safe-area-inset-left) + 0px);
 }
 
 .container {
   text-align: center;
   width: 100%;
-  padding: 0 1rem;
+  padding: 0 1rem;                          /* => 16px a cada lado */
 }
 
-/* Contador: monoespaciado + números tabulares, tamaño según vmin para que siempre quepa */
 .countdown {
   font-weight: 700;
   font-variant-numeric: tabular-nums lining-nums;
   font-feature-settings: "tnum" 1, "lnum" 1;
-  letter-spacing: 0.02em;
   line-height: 1;
-  font-size: clamp(2.4rem, 18vmin, 11rem);  /* vmin -> se adapta al lado menor (alto/ancho) */
-  margin-bottom: 2rem;
-  white-space: nowrap;                       /* evita saltos de línea */
+  white-space: nowrap;                      /* todo en una línea */
+  letter-spacing: 0.02em;
+  /* El tamaño final lo define JS (fitCountdown) para que siempre quepa */
 }
 
-/* Frase en Lexend */
 .phrase {
   font-family: "Lexend Local", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
   font-weight: 400;
   font-size: clamp(0.9rem, 2.4vmin, 1.4rem);
   color: #8a8a8a;
   max-width: 60ch;
-  margin: 0 auto;
+  margin: 2rem auto 0;
   line-height: 1.5;
 }

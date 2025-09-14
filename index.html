@@ -2,24 +2,24 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <!-- Evita zoom inicial en iOS y usa toda la pantalla -->
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+  <!-- viewport correcto en iOS, y evitar zooms raros -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Countdown</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <div class="container">
     <div id="countdown" class="countdown" aria-live="polite">00d 00h 00m 00s</div>
-    <p class="phrase">hay que hacer contacto cero para llegar a tener distancia cero</p>
+    <p class="phrase">"hay que hacer contacto cero para llegar a tener distancia cero"</p>
   </div>
 
   <script>
-    // 10 noviembre 2025, 08:55 (hora local)
+    // ---- Cuenta atrás (10 nov 2025, 08:55 hora local) ----
     const targetDate = new Date("Nov 10, 2025 08:55:00").getTime();
     const el = document.getElementById("countdown");
     const pad2 = (n) => String(n).padStart(2, "0");
 
-    function tick() {
+    function renderCountdown() {
       const now = Date.now();
       let ms = targetDate - now;
 
@@ -28,19 +28,48 @@
         return;
       }
 
-      const days = Math.floor(ms / 86400000);
-      ms -= days * 86400000;
-      const hours = Math.floor(ms / 3600000);
-      ms -= hours * 3600000;
-      const minutes = Math.floor(ms / 60000);
-      ms -= minutes * 60000;
-      const seconds = Math.floor(ms / 1000);
+      const d = Math.floor(ms / 86400000); ms -= d * 86400000;
+      const h = Math.floor(ms / 3600000);  ms -= h * 3600000;
+      const m = Math.floor(ms / 60000);    ms -= m * 60000;
+      const s = Math.floor(ms / 1000);
 
-      el.textContent = `${pad2(days)}d ${pad2(hours)}h ${pad2(minutes)}m ${pad2(seconds)}s`;
+      el.textContent = `${pad2(d)}d ${pad2(h)}h ${pad2(m)}m ${pad2(s)}s`;
     }
 
-    tick();
-    setInterval(tick, 1000);
+    // ---- FitText: hace que el contador quepa SIEMPRE en el ancho ----
+    function fitCountdown() {
+      // margen horizontal total (coincide con padding del contenedor)
+      const horizontalPadding = 16 * 2; // 1rem a cada lado
+      const available = Math.max(0, window.innerWidth - horizontalPadding);
+
+      // tamaño base para medir
+      el.style.fontSize = "120px";
+      // ancho real del texto con el tamaño base
+      const textWidth = el.scrollWidth || el.getBoundingClientRect().width || 1;
+
+      // factor de escala al ancho disponible (con un 92% de holgura)
+      const scale = (available / textWidth) * 0.92;
+
+      // límites razonables (entre 40px y 180px aprox.)
+      const px = Math.max(40, Math.min(180, 120 * scale));
+      el.style.fontSize = px + "px";
+    }
+
+    function tick() {
+      renderCountdown();
+    }
+
+    // Primer render + ajuste; luego intervalo
+    renderCountdown();
+    fitCountdown();
+    const interval = setInterval(tick, 1000);
+
+    // Reajustar al cambiar tamaño/orientación y tras pintar la primera vez
+    window.addEventListener("resize", fitCountdown, { passive: true });
+    window.addEventListener("orientationchange", () => setTimeout(fitCountdown, 50), { passive: true });
+
+    // Si quieres, vuelve a ajustar cada minuto por si cambia algo del UI del navegador móvil:
+    setInterval(fitCountdown, 60 * 1000);
   </script>
 </body>
 </html>
