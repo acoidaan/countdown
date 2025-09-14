@@ -1,39 +1,47 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Countdown</title>
-  <link rel="stylesheet" href="styles.css">
+
+  <!-- Webfont consistente en todos los navegadores -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <div class="container">
-    <div id="countdown" class="countdown"></div>
+    <div id="countdown" class="countdown" aria-live="polite"></div>
     <p class="phrase">hay que hacer contacto cero para llegar a tener distancia cero</p>
   </div>
 
   <script>
-    // Fecha objetivo: 10 noviembre 2025, 08:55
+    // 10 noviembre 2025, 08:55 (hora del sistema del visitante)
     const targetDate = new Date("Nov 10, 2025 08:55:00").getTime();
+    const el = document.getElementById("countdown");
 
-    const countdown = document.getElementById("countdown");
-
-    const interval = setInterval(() => {
-      const now = new Date().getTime();
+    const tick = () => {
+      const now = Date.now();
       const distance = targetDate - now;
 
       if (distance <= 0) {
-        clearInterval(interval);
-        countdown.innerHTML = "¡Es el momento!";
+        el.textContent = "¡Es el momento!";
         return;
       }
 
-      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+      const d = Math.floor(distance / (1000 * 60 * 60 * 24));
+      const h = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const s = Math.floor((distance % (1000 * 60)) / 1000);
 
-      countdown.innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
-    }, 1000);
+      el.textContent = `${d}d ${h}h ${m}m ${s}s`;
+    };
+
+    tick();
+    setInterval(tick, 1000);
   </script>
 </body>
 </html>
