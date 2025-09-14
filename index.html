@@ -16,8 +16,23 @@
   </div>
 
   <script>
-    // ---- Cuenta atrás (10 nov 2025, 08:55 hora local) ----
-    const targetDate = new Date("Nov 10, 2025 08:55:00").getTime();
+    // ---- helper: hora local en un timeZone IANA -> ms UTC
+    function zonedTimeToUtcMs({ y, M, d, h = 0, m = 0, s = 0 }, timeZone) {
+      // Creamos una fecha “marcador” en UTC con esos campos
+      const marker = new Date(Date.UTC(y, M - 1, d, h, m, s));
+      // La representamos como “hora local en ese timeZone”
+      const asLocal = new Date(marker.toLocaleString('en-US', { timeZone }));
+      // El desfase es marker - asLocal
+      const offset = marker - asLocal;
+      return marker.getTime() - offset;
+    }
+
+    // ---- Cuenta atrás (10 nov 2025, 08:55 en Canarias) ----
+    const targetDate = zonedTimeToUtcMs(
+      { y: 2025, M: 11, d: 10, h: 8, m: 55, s: 0 },
+      "Atlantic/Canary"
+    );
+
     const el = document.getElementById("countdown");
     const pad2 = (n) => String(n).padStart(2, "0");
 
@@ -40,19 +55,14 @@
 
     // ---- FitText: hace que el contador quepa SIEMPRE en el ancho ----
     function fitCountdown() {
-      // margen horizontal total (coincide con padding del contenedor)
       const horizontalPadding = 16 * 2; // 1rem a cada lado
       const available = Math.max(0, window.innerWidth - horizontalPadding);
 
-      // tamaño base para medir
       el.style.fontSize = "120px";
-      // ancho real del texto con el tamaño base
       const textWidth = el.scrollWidth || el.getBoundingClientRect().width || 1;
 
-      // factor de escala al ancho disponible (con un 92% de holgura)
       const scale = (available / textWidth) * 0.92;
 
-      // límites razonables (entre 40px y 180px aprox.)
       const px = Math.max(40, Math.min(180, 120 * scale));
       el.style.fontSize = px + "px";
     }
@@ -70,7 +80,7 @@
     window.addEventListener("resize", fitCountdown, { passive: true });
     window.addEventListener("orientationchange", () => setTimeout(fitCountdown, 50), { passive: true });
 
-    // Si quieres, vuelve a ajustar cada minuto por si cambia algo del UI del navegador móvil:
+    // Ajuste cada minuto por si cambia algo del UI del navegador móvil
     setInterval(fitCountdown, 60 * 1000);
   </script>
 </body>
