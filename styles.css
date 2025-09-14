@@ -1,16 +1,44 @@
+/* =========  Fuentes auto-hospedadas (pon los .woff2 en /fonts)  ========= */
+/* Roboto Mono 700 para el contador */
+@font-face {
+  font-family: "Roboto Mono Local";
+  src: local("Roboto Mono Bold"),
+       url("fonts/roboto-mono-700.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Lexend 400 para la frase */
+@font-face {
+  font-family: "Lexend Local";
+  src: local("Lexend Regular"),
+       url("fonts/lexend-400.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
+html, body { height: 100%; }
+
+/* iOS: evita reescalado automático de texto */
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+
 body {
-  height: 100vh;
+  min-height: 100svh;               /* usa viewport real en móviles */
   display: flex;
   justify-content: center;
   align-items: center;
   background: #0d0d0d;
   color: #f5f5f5;
-  font-family: "Roboto Mono", monospace;
+  font-family: "Roboto Mono Local", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right)
+           env(safe-area-inset-bottom) env(safe-area-inset-left);
 }
 
 .container {
@@ -19,20 +47,23 @@ body {
   padding: 0 1rem;
 }
 
+/* Contador: monoespaciado + números tabulares, tamaño según vmin para que siempre quepa */
 .countdown {
   font-weight: 700;
   font-variant-numeric: tabular-nums lining-nums;
   font-feature-settings: "tnum" 1, "lnum" 1;
-  font-size: clamp(2.5rem, 14vw, 10rem);
-  line-height: 1.1;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  font-size: clamp(2.4rem, 18vmin, 11rem);  /* vmin -> se adapta al lado menor (alto/ancho) */
   margin-bottom: 2rem;
-  white-space: nowrap;
+  white-space: nowrap;                       /* evita saltos de línea */
 }
 
+/* Frase en Lexend */
 .phrase {
-  font-family: "Lexend", sans-serif;
+  font-family: "Lexend Local", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
   font-weight: 400;
-  font-size: clamp(0.9rem, 2vw, 1.4rem);
+  font-size: clamp(0.9rem, 2.4vmin, 1.4rem);
   color: #8a8a8a;
   max-width: 60ch;
   margin: 0 auto;

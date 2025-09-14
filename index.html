@@ -2,26 +2,21 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Evita zoom inicial en iOS y usa toda la pantalla -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
   <title>Countdown</title>
-
-  <!-- Roboto Mono (contador estable) + Lexend (frase) -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600&family=Roboto+Mono:wght@700&display=swap" rel="stylesheet">
-
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <div class="container">
-    <div id="countdown" class="countdown">00d 00h 00m 00s</div>
-    <p class="phrase">"hay que hacer contacto cero para llegar a tener distancia cero"</p>
+    <div id="countdown" class="countdown" aria-live="polite">00d 00h 00m 00s</div>
+    <p class="phrase">hay que hacer contacto cero para llegar a tener distancia cero</p>
   </div>
 
   <script>
+    // 10 noviembre 2025, 08:55 (hora local)
     const targetDate = new Date("Nov 10, 2025 08:55:00").getTime();
     const el = document.getElementById("countdown");
-
     const pad2 = (n) => String(n).padStart(2, "0");
 
     function tick() {
@@ -41,8 +36,7 @@
       ms -= minutes * 60000;
       const seconds = Math.floor(ms / 1000);
 
-      el.textContent =
-        `${pad2(days)}d ${pad2(hours)}h ${pad2(minutes)}m ${pad2(seconds)}s`;
+      el.textContent = `${pad2(days)}d ${pad2(hours)}h ${pad2(minutes)}m ${pad2(seconds)}s`;
     }
 
     tick();
