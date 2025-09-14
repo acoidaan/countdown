@@ -5,40 +5,45 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Countdown</title>
 
-  <!-- Montserrat bold para consistencia -->
+  <!-- Roboto Mono (contador estable) + Lexend (frase) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600&family=Roboto+Mono:wght@700&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <div class="container">
-    <div id="countdown" class="countdown"></div>
-    <p class="phrase">hay que hacer contacto cero para llegar a tener distancia cero</p>
+    <div id="countdown" class="countdown">00d 00h 00m 00s</div>
+    <p class="phrase">"hay que hacer contacto cero para llegar a tener distancia cero"</p>
   </div>
 
   <script>
-    // Fecha objetivo: 10 noviembre 2025, 08:55
     const targetDate = new Date("Nov 10, 2025 08:55:00").getTime();
     const el = document.getElementById("countdown");
 
-    const tick = () => {
-      const now = Date.now();
-      const distance = targetDate - now;
+    const pad2 = (n) => String(n).padStart(2, "0");
 
-      if (distance <= 0) {
-        el.textContent = "¡Es el momento!";
+    function tick() {
+      const now = Date.now();
+      let ms = targetDate - now;
+
+      if (ms <= 0) {
+        el.textContent = "00d 00h 00m 00s";
         return;
       }
 
-      const d = Math.floor(distance / (1000 * 60 * 60 * 24));
-      const h = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-      const s = Math.floor((distance % (1000 * 60)) / 1000);
+      const days = Math.floor(ms / 86400000);
+      ms -= days * 86400000;
+      const hours = Math.floor(ms / 3600000);
+      ms -= hours * 3600000;
+      const minutes = Math.floor(ms / 60000);
+      ms -= minutes * 60000;
+      const seconds = Math.floor(ms / 1000);
 
-      el.textContent = `${d}d ${h}h ${m}m ${s}s`;
-    };
+      el.textContent =
+        `${pad2(days)}d ${pad2(hours)}h ${pad2(minutes)}m ${pad2(seconds)}s`;
+    }
 
     tick();
     setInterval(tick, 1000);
