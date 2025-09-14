@@ -40,12 +40,19 @@
     
     // ---- FitText: hace que el contador quepa SIEMPRE en el ancho ----
     function fitCountdown() {
-      const horizontalPadding = 16 * 2; // 1rem a cada lado
+      const horizontalPadding = 32; // Un poco más de padding para móvil
       const available = Math.max(0, window.innerWidth - horizontalPadding);
+      
+      // Resetear el tamaño para medir correctamente
       el.style.fontSize = "120px";
-      const textWidth = el.scrollWidth || el.getBoundingClientRect().width || 1;
-      const scale = (available / textWidth) * 0.92;
-      const px = Math.max(40, Math.min(180, 120 * scale));
+      
+      // Forzar un reflow para asegurar medida correcta
+      el.offsetWidth;
+      
+      const textWidth = el.scrollWidth;
+      const scale = (available / textWidth) * 0.88; // Más conservador (era 0.92)
+      const px = Math.max(30, Math.min(180, 120 * scale));
+      
       el.style.fontSize = px + "px";
     }
     
