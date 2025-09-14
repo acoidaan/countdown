@@ -15,9 +15,8 @@
   </div>
   <script>
     // ---- Cuenta atrás (10 nov 2025, 08:55 en Canarias) ----
-    // Canarias en noviembre = UTC+0 (horario de invierno)
-    // Así que 08:55 en Canarias = 08:55 UTC
-    const targetDate = new Date(Date.UTC(2025, 10, 10, 8, 55, 0));
+    // Hack: restamos 1 hora porque algo está desajustado
+    const targetDate = new Date(Date.UTC(2025, 10, 10, 7, 55, 0)); // 07:55 UTC en lugar de 08:55
     
     const el = document.getElementById("countdown");
     const pad2 = (n) => String(n).padStart(2, "0");
