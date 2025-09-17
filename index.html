@@ -11,12 +11,12 @@
 <body>
   <div class="container">
     <div id="countdown" class="countdown" aria-live="polite">00d 00h 00m 00s</div>
-    <p class="phrase">13 de noviembre de 2025</p>
-    <p class="phrase">"hay que hacer contacto cero para llegar a tener distancia cero"</p>
+    <p class="phrase">7 de noviembre de 2025</p>
+    <p class="phrase">tengo un mensaje tuyo que dice "como pongas un pie en sevilla eres mío"</p>
   </div>
   <script>
-    // ---- Cuenta atrás (12 nov 2025, 23:00 en Canarias) ----
-    const targetDate = new Date(Date.UTC(2025, 10, 12, 23, 0, 0));
+    // ---- Cuenta atrás (7 nov 2025, 23:35 en Sevilla) ----
+    const targetDate = new Date(Date.UTC(2025, 10, 7, 23, 35, 0));
 
     const el = document.getElementById("countdown");
     const pad2 = (n) => String(n).padStart(2, "0");
@@ -26,7 +26,7 @@
       let ms = targetDate.getTime() - now.getTime();
       
       if (ms <= 0) {
-        el.textContent = "Feliz Cumpleaños Carlita :)";
+        el.textContent = "te adoro guapa";
         return;
       }
       
