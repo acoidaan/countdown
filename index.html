@@ -1,82 +1,100 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <!-- viewport correcto en iOS, y evitar zooms raros -->
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Countdown</title>
-  <link rel="icon" type="image/svg+xml" href="hourglass.svg">
-  <link rel="stylesheet" href="styles.css" />
-</head>
-<body>
-  <div class="container">
-    <div id="countdown" class="countdown" aria-live="polite">00d 00h 00m 00s</div>
-    <p class="phrase">4 de marzo de 2026</p>
-    <p class="phrase">tengo mucho que contarte</p>
-  </div>
-  <script>
-    // ---- Cuenta atrás (4 mar 2026, 00:00 en Sevilla) ----
-    const targetDate = new Date(Date.UTC(2026, 2, 4, 23, 0, 0));
+  <head>
+    <meta charset="UTF-8" />
+    <!-- viewport correcto en iOS, y evitar zooms raros -->
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>Countdown</title>
+    <link rel="icon" type="image/svg+xml" href="hourglass.svg" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div id="countdown" class="countdown" aria-live="polite">
+        00d 00h 00m 00s
+      </div>
+      <p class="phrase">4 de marzo de 2026</p>
+      <p class="phrase">te echo de menos</p>
+    </div>
+    <script>
+      // ---- Cuenta atrás (4 mar 2026, 00:00 en Sevilla) ----
+      const targetDate = new Date(Date.UTC(2026, 2, 4, 23, 0, 0));
 
-    const el = document.getElementById("countdown");
-    const pad2 = (n) => String(n).padStart(2, "0");
-    
-    function renderCountdown() {
-      const now = new Date();
-      let ms = targetDate.getTime() - now.getTime();
-      
-      if (ms <= 0) {
-        el.textContent = "te estoy esperando";
-        return;
+      const el = document.getElementById("countdown");
+      const pad2 = (n) => String(n).padStart(2, "0");
+
+      function renderCountdown() {
+        const now = new Date();
+        let ms = targetDate.getTime() - now.getTime();
+
+        if (ms <= 0) {
+          el.textContent = "te estoy esperando";
+          return;
+        }
+
+        const d = Math.floor(ms / 86400000);
+        ms -= d * 86400000;
+        const h = Math.floor(ms / 3600000);
+        ms -= h * 3600000;
+        const m = Math.floor(ms / 60000);
+        ms -= m * 60000;
+        const s = Math.floor(ms / 1000);
+
+        el.textContent = `${pad2(d)}d ${pad2(h)}h ${pad2(m)}m ${pad2(s)}s`;
       }
-      
-      const d = Math.floor(ms / 86400000); ms -= d * 86400000;
-      const h = Math.floor(ms / 3600000);  ms -= h * 3600000;
-      const m = Math.floor(ms / 60000);    ms -= m * 60000;
-      const s = Math.floor(ms / 1000);
-      
-      el.textContent = `${pad2(d)}d ${pad2(h)}h ${pad2(m)}m ${pad2(s)}s`;
-    }
-    
-    // ---- FitText: hace que el contador quepa SIEMPRE en el ancho ----
-    function fitCountdown() {
-      const horizontalPadding = 32; // Un poco más de padding para móvil
-      const available = Math.max(0, window.innerWidth - horizontalPadding);
-      
-      // Resetear el tamaño para medir correctamente
-      el.style.fontSize = "120px";
-      
-      // Forzar un reflow para asegurar medida correcta
-      el.offsetWidth;
-      
-      const textWidth = el.scrollWidth;
-      const scale = (available / textWidth) * 0.88; // Más conservador (era 0.92)
-      const px = Math.max(30, Math.min(180, 120 * scale));
-      
-      el.style.fontSize = px + "px";
-    }
-    
-    function tick() {
+
+      // ---- FitText: hace que el contador quepa SIEMPRE en el ancho ----
+      function fitCountdown() {
+        const horizontalPadding = 32; // Un poco más de padding para móvil
+        const available = Math.max(0, window.innerWidth - horizontalPadding);
+
+        // Resetear el tamaño para medir correctamente
+        el.style.fontSize = "120px";
+
+        // Forzar un reflow para asegurar medida correcta
+        el.offsetWidth;
+
+        const textWidth = el.scrollWidth;
+        const scale = (available / textWidth) * 0.88; // Más conservador (era 0.92)
+        const px = Math.max(30, Math.min(180, 120 * scale));
+
+        el.style.fontSize = px + "px";
+      }
+
+      function tick() {
+        renderCountdown();
+      }
+
+      // Primer render + ajuste; luego intervalo
       renderCountdown();
-    }
-    
-    // Primer render + ajuste; luego intervalo
-    renderCountdown();
-    fitCountdown();
-    const interval = setInterval(tick, 1000);
-    
-    // Reajustar al cambiar tamaño/orientación y tras pintar la primera vez
-    window.addEventListener("resize", fitCountdown, { passive: true });
-    window.addEventListener("orientationchange", () => setTimeout(fitCountdown, 50), { passive: true });
-    
-    // Ajuste cada minuto por si cambia algo del UI del navegador móvil
-    setInterval(fitCountdown, 60 * 1000);
-    
-    // Debug: mostrar la fecha target y actual en consola
-    console.log('Fecha objetivo:', targetDate);
-    console.log('Fecha actual:', new Date());
-    console.log('Diferencia en ms:', targetDate.getTime() - new Date().getTime());
-    console.log('Diferencia en minutos:', Math.floor((targetDate.getTime() - new Date().getTime()) / 60000));
-  </script>
-</body>
+      fitCountdown();
+      const interval = setInterval(tick, 1000);
+
+      // Reajustar al cambiar tamaño/orientación y tras pintar la primera vez
+      window.addEventListener("resize", fitCountdown, { passive: true });
+      window.addEventListener(
+        "orientationchange",
+        () => setTimeout(fitCountdown, 50),
+        { passive: true }
+      );
+
+      // Ajuste cada minuto por si cambia algo del UI del navegador móvil
+      setInterval(fitCountdown, 60 * 1000);
+
+      // Debug: mostrar la fecha target y actual en consola
+      console.log("Fecha objetivo:", targetDate);
+      console.log("Fecha actual:", new Date());
+      console.log(
+        "Diferencia en ms:",
+        targetDate.getTime() - new Date().getTime()
+      );
+      console.log(
+        "Diferencia en minutos:",
+        Math.floor((targetDate.getTime() - new Date().getTime()) / 60000)
+      );
+    </script>
+  </body>
 </html>
