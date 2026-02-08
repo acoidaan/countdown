@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
@@ -17,11 +17,13 @@
         00d 00h 00m 00s
       </div>
       <p class="phrase">4 de marzo de 2026</p>
-      <p class="phrase">te echo de menos</p>
+      <p class="phrase">
+        no deberías rendirte en algo en lo que sueñas todos los días
+      </p>
     </div>
     <script>
-      // ---- Cuenta atrás (4 mar 2026, 00:00 en Sevilla) ----
-      const targetDate = new Date(Date.UTC(2026, 2, 4, 23, 0, 0));
+      // ---- Cuenta atrás (10 jul 2026, 00:00 en Sevilla) ----
+      const targetDate = new Date(Date.UTC(2026, 6, 9, 23, 0, 0));
 
       const el = document.getElementById("countdown");
       const pad2 = (n) => String(n).padStart(2, "0");
@@ -78,7 +80,7 @@
       window.addEventListener(
         "orientationchange",
         () => setTimeout(fitCountdown, 50),
-        { passive: true }
+        { passive: true },
       );
 
       // Ajuste cada minuto por si cambia algo del UI del navegador móvil
@@ -89,11 +91,11 @@
       console.log("Fecha actual:", new Date());
       console.log(
         "Diferencia en ms:",
-        targetDate.getTime() - new Date().getTime()
+        targetDate.getTime() - new Date().getTime(),
       );
       console.log(
         "Diferencia en minutos:",
-        Math.floor((targetDate.getTime() - new Date().getTime()) / 60000)
+        Math.floor((targetDate.getTime() - new Date().getTime()) / 60000),
       );
     </script>
   </body>
