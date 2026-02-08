@@ -2,30 +2,31 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <!-- viewport correcto en iOS, y evitar zooms raros -->
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, viewport-fit=cover"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>Countdown</title>
     <link rel="icon" type="image/svg+xml" href="hourglass.svg" />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <div class="container">
-      <div id="countdown" class="countdown" aria-live="polite">
-        00d 00h 00m 00s
-      </div>
+      <div id="countdown" class="countdown" aria-live="polite">00d 00h 00m 00s</div>
+
+      <!-- porcentaje en pequeñito -->
+      <div id="percent" class="percent" aria-live="polite"></div>
+
       <p class="phrase">10 de julio de 2026</p>
-      <p class="phrase">
-        no deberías rendirte en algo en lo que sueñas todos los días
-      </p>
+      <p class="phrase">no deberías rendirte en algo en lo que sueñas todos los días</p>
     </div>
+
     <script>
-      // ---- Cuenta atrás (10 jul 2026, 00:00 en Sevilla) ----
-      const targetDate = new Date(Date.UTC(2026, 6, 9, 23, 0, 0));
+      // Inicio: 1 ene 2026 00:00 en Sevilla => 31 dic 2025 23:00 UTC (CET, UTC+1)
+      const startDate = new Date(Date.UTC(2025, 11, 31, 23, 0, 0));
+
+      // Final: 10 jul 2026 00:00 en Sevilla => 9 jul 2026 22:00 UTC (CEST, UTC+2)
+      const targetDate = new Date(Date.UTC(2026, 6, 9, 22, 0, 0));
 
       const el = document.getElementById("countdown");
+      const percentEl = document.getElementById("percent");
       const pad2 = (n) => String(n).padStart(2, "0");
 
       function renderCountdown() {
@@ -34,6 +35,7 @@
 
         if (ms <= 0) {
           el.textContent = "te estoy esperando";
+          percentEl.textContent = "100.00%";
           return;
         }
 
@@ -48,19 +50,34 @@
         el.textContent = `${pad2(d)}d ${pad2(h)}h ${pad2(m)}m ${pad2(s)}s`;
       }
 
-      // ---- FitText: hace que el contador quepa SIEMPRE en el ancho ----
+      function round2(x) {
+        return Math.round(x * 100) / 100;
+      }
+
+      function renderPercent() {
+        const now = new Date();
+
+        const total = targetDate.getTime() - startDate.getTime();
+        const left = targetDate.getTime() - now.getTime();
+
+        const remaining = Math.max(0, Math.min(1, left / total)) * 100;
+        const elapsed = 100 - remaining;
+
+        // Si quieres SOLO lo que falta, cambia a:
+        // percentEl.textContent = `${round2(remaining).toFixed(2)}%`;
+        percentEl.textContent =
+          `${round2(remaining).toFixed(2)}% por llegar · ${round2(elapsed).toFixed(2)}% recorrido`;
+      }
+
       function fitCountdown() {
-        const horizontalPadding = 32; // Un poco más de padding para móvil
+        const horizontalPadding = 32;
         const available = Math.max(0, window.innerWidth - horizontalPadding);
 
-        // Resetear el tamaño para medir correctamente
         el.style.fontSize = "120px";
-
-        // Forzar un reflow para asegurar medida correcta
         el.offsetWidth;
 
         const textWidth = el.scrollWidth;
-        const scale = (available / textWidth) * 0.88; // Más conservador (era 0.92)
+        const scale = (available / textWidth) * 0.88;
         const px = Math.max(30, Math.min(180, 120 * scale));
 
         el.style.fontSize = px + "px";
@@ -68,35 +85,22 @@
 
       function tick() {
         renderCountdown();
+        renderPercent();
       }
 
-      // Primer render + ajuste; luego intervalo
-      renderCountdown();
+      // Primer render
+      tick();
       fitCountdown();
-      const interval = setInterval(tick, 1000);
 
-      // Reajustar al cambiar tamaño/orientación y tras pintar la primera vez
+      setInterval(tick, 1000);
+
       window.addEventListener("resize", fitCountdown, { passive: true });
-      window.addEventListener(
-        "orientationchange",
-        () => setTimeout(fitCountdown, 50),
-        { passive: true },
-      );
+      window.addEventListener("orientationchange", () => setTimeout(fitCountdown, 50), { passive: true });
 
-      // Ajuste cada minuto por si cambia algo del UI del navegador móvil
       setInterval(fitCountdown, 60 * 1000);
 
-      // Debug: mostrar la fecha target y actual en consola
-      console.log("Fecha objetivo:", targetDate);
+      console.log("Fecha objetivo (UTC):", targetDate.toISOString());
       console.log("Fecha actual:", new Date());
-      console.log(
-        "Diferencia en ms:",
-        targetDate.getTime() - new Date().getTime(),
-      );
-      console.log(
-        "Diferencia en minutos:",
-        Math.floor((targetDate.getTime() - new Date().getTime()) / 60000),
-      );
     </script>
   </body>
 </html>
