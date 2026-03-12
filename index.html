@@ -2,43 +2,53 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
     <title>Countdown</title>
     <link rel="icon" type="image/svg+xml" href="hourglass.svg" />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <div class="container">
-      <div id="countdown" class="countdown" aria-live="polite">00d 00h 00m 00s</div>
+      <!-- Countdown: nos vemos -->
+      <div id="countdown-meet" class="countdown countdown--small" aria-live="polite">
+        00d 00h 00m 00s
+      </div>
+      <p class="phrase phrase--highlight">19 de marzo · nos vemos</p>
+
+      <hr class="divider" />
+
+      <!-- Countdown: cena romántica -->
+      <div id="countdown" class="countdown" aria-live="polite">
+        00d 00h 00m 00s
+      </div>
 
       <!-- porcentaje en pequeñito -->
       <div id="percent" class="percent" aria-live="polite"></div>
 
       <p class="phrase">10 de julio de 2026</p>
-      <p class="phrase">no deberías rendirte en algo en lo que sueñas todos los días</p>
+      <p class="phrase">cena romántica en Casa Manolo</p>
     </div>
 
     <script>
       // Inicio: 1 ene 2026 00:00 en Sevilla => 31 dic 2025 23:00 UTC (CET, UTC+1)
       const startDate = new Date(Date.UTC(2025, 11, 31, 23, 0, 0));
 
+      // Nos vemos: 19 mar 2026 00:00 en Sevilla => 18 mar 2026 23:00 UTC (CET, UTC+1)
+      const meetDate = new Date(Date.UTC(2026, 2, 18, 23, 0, 0));
+
       // Final: 10 jul 2026 00:00 en Sevilla => 9 jul 2026 22:00 UTC (CEST, UTC+2)
       const targetDate = new Date(Date.UTC(2026, 6, 9, 23, 0, 0));
 
       const el = document.getElementById("countdown");
+      const meetEl = document.getElementById("countdown-meet");
       const percentEl = document.getElementById("percent");
       const pad2 = (n) => String(n).padStart(2, "0");
 
-      function renderCountdown() {
-        const now = new Date();
-        let ms = targetDate.getTime() - now.getTime();
-
-        if (ms <= 0) {
-          el.textContent = "te estoy esperando";
-          percentEl.textContent = "100.00%";
-          return;
-        }
-
+      function formatDiff(ms) {
+        if (ms <= 0) return null;
         const d = Math.floor(ms / 86400000);
         ms -= d * 86400000;
         const h = Math.floor(ms / 3600000);
@@ -46,8 +56,28 @@
         const m = Math.floor(ms / 60000);
         ms -= m * 60000;
         const s = Math.floor(ms / 1000);
+        return `${pad2(d)}d ${pad2(h)}h ${pad2(m)}m ${pad2(s)}s`;
+      }
 
-        el.textContent = `${pad2(d)}d ${pad2(h)}h ${pad2(m)}m ${pad2(s)}s`;
+      function renderCountdown() {
+        const now = new Date();
+
+        // Countdown cena
+        const msCena = targetDate.getTime() - now.getTime();
+        if (msCena <= 0) {
+          el.textContent = "te adoro";
+          percentEl.textContent = "100.00%";
+        } else {
+          el.textContent = formatDiff(msCena);
+        }
+
+        // Countdown nos vemos
+        const msMeet = meetDate.getTime() - now.getTime();
+        if (msMeet <= 0) {
+          meetEl.textContent = "¡ya estamos juntos!";
+        } else {
+          meetEl.textContent = formatDiff(msMeet);
+        }
       }
 
       function round2(x) {
@@ -65,22 +95,28 @@
 
         // Si quieres SOLO lo que falta, cambia a:
         // percentEl.textContent = `${round2(remaining).toFixed(2)}%`;
-        percentEl.textContent =
-          `${round2(remaining).toFixed(2)}% por llegar · ${round2(elapsed).toFixed(2)}% recorrido`;
+        percentEl.textContent = `${round2(remaining).toFixed(2)}% por llegar · ${round2(elapsed).toFixed(2)}% recorrido`;
       }
 
       function fitCountdown() {
         const horizontalPadding = 32;
         const available = Math.max(0, window.innerWidth - horizontalPadding);
 
+        // Fit cena countdown
         el.style.fontSize = "120px";
         el.offsetWidth;
-
         const textWidth = el.scrollWidth;
         const scale = (available / textWidth) * 0.88;
         const px = Math.max(30, Math.min(180, 120 * scale));
-
         el.style.fontSize = px + "px";
+
+        // Fit meet countdown (más pequeño, ~60% del principal)
+        meetEl.style.fontSize = "120px";
+        meetEl.offsetWidth;
+        const meetWidth = meetEl.scrollWidth;
+        const meetScale = (available / meetWidth) * 0.88;
+        const meetPx = Math.max(20, Math.min(120, 120 * meetScale * 0.6));
+        meetEl.style.fontSize = meetPx + "px";
       }
 
       function tick() {
@@ -95,7 +131,11 @@
       setInterval(tick, 1000);
 
       window.addEventListener("resize", fitCountdown, { passive: true });
-      window.addEventListener("orientationchange", () => setTimeout(fitCountdown, 50), { passive: true });
+      window.addEventListener(
+        "orientationchange",
+        () => setTimeout(fitCountdown, 50),
+        { passive: true },
+      );
 
       setInterval(fitCountdown, 60 * 1000);
 
